@@ -1,9 +1,12 @@
+What this guide is *fixme
+
 <h1><strong>QMK Overview</strong></h1>
-<p>QMK (<em>Quantum Mechanical Keyboard</em>) is an open source community that maintains <a href="https://github.com/qmk/qmk_firmware" title="QMK Firmware">QMK Firmware</a>, <a href="https://github.com/qmk/qmk_toolbox/releases" title="QMK Toolbox">QMK Toolbox</a>, <a href="http://qmk.fm" title="QMK.fm">qmk.fm</a>, and other supporting <a href="https://docs.qmk.fm" title="Docs QMK">documents</a>. QMK Firmware is a keyboard firmware based on the TMK_keyboard with some useful features for Atmel AVRcontrollers used in most of the keyboards within mechkeys.ca. You can use it to power your own hand-wired or mechkeys.ca keyboard PCB. <br />The following links are internal to this how-to and take you directly to the section you want:</p>
+<p>QMK (<em>Quantum Mechanical Keyboard</em>) is an open source community that maintains the<a href="https://github.com/qmk/qmk_firmware" title="Official QMK Firmware">Official QMK Firmware</a>, <a href="https://github.com/qmk/qmk_toolbox/releases" title="QMK Toolbox">QMK Toolbox</a>, <a href="http://qmk.fm" title="QMK.fm">qmk.fm</a>, and other supporting <a href="https://docs.qmk.fm" title="Docs QMK">documents</a>. QMK Firmware is a keyboard firmware based on the TMK_keyboard with some useful features for Atmel AVRcontrollers used in most of the keyboards within mechkeys.ca. You can use it to power your own hand-wired or mechkeys.ca keyboard PCB. </p>
+<br />The following links are internal to this how-to and take you directly to the section you want:</p>
 <ul>
 <li class="toggleBox showdesktop"><a href="#keyboard-layout-editor">Keyboard layour editor guide</a></li>
-<li class="toggleBox showdesktop"><a href="#qmk-firmware-builder-guide">QMK firmware builder guide</a></li>
-<li class="toggleBox showdesktop"><a href="#qmk-toolbox">QMK Toolbox</a></li>
+<li class="toggleBox showdesktop"><a href="#gui-firmware-builder-guide">Web-based GUI firmware builder guide</a></li>
+<li class="toggleBox showdesktop"><a href="#qmk-toolbox">QMK Toolbox guise</a></li>
 <li class="toggleBox showdesktop"><a href="#putting-it-all-together">Putting it all together</a></li>
 </ul>
 <p><span>Join the official Mechkeys.ca Discord </span><br /><span>Here</span><a href="https://discord.gg/vW3dfVU" class="text-link"> https://discord.gg/vW3dfVU</a></p>
@@ -11,26 +14,30 @@
 <h1><strong>Programming your mechkeys.ca keyboard</strong></h1>
 <p>Before customizing your keyboard you need know if your keyboard runs bootmapper or QMK. If your PCB does not have a reset button on the bottom, then you have a bootmapper PCB, and this guide does not provide instructions for programming with bootmapper.  Also, you need to understand the ways to program your keyboard, and common terms and acronyms we will use in this guide.</p>
 <ul>
-<li>QFB - either <a href="http://qmkeyboard.cn" title="qmkeyboard.cn">qmkeyboard.cn</a> or <a href="http://kbfirmware.com" title="kbfirmware">kbfirmware.com</a> used for compiling firmware. We call either one QMK Firmware Builder</li>
+<li>GFB - either <a href="http://qmkeyboard.cn" title="qmkeyboard.cn">qmkeyboard.cn</a> or <a href="http://kbfirmware.com" title="kbfirmware">kbfirmware.com</a> are used for compiling firmware. We call either one GUI Firmware Builder (or GFB) </li>
+  <ul>
+    <li>Neither kbfirmware nor qmkeyboard are not affiliated with the official QMK Firmware community and are not supported by the official QMK creators/maintainers. As such, both firmware builders are outdated and currently utilizing old builds of the QMK Firmware. Some errors could occur and some awesome features of QMK are not present.</li>
+    <li>If you’d like to incorporate all the features of QMK and aren’t against learning some programming and using command line tools.  We recommend going to <a href=“https://docs.qmk.fm” title=“Official-QMK.fm>QMK.fm</a> and reading their through guide</li>
+    <\ul>
 <li>KLE - <a href="http://keyboard-layout-editor.com" title="keyboard-layout-editor.com">KLE</a></li>
 <li>Flash - how you install your firmware to keyboard</li>
 <li>Compile - the process of putting all the pieces of firmware together into a .hex</li>
 <li>.hex - the software that is flashed onto your keyboard</li>
-<li>.json - code used on KLE, QFB, and sharing amongst community used for editing</li>
+<li>.json - code used on KLE, GFB, and sharing amongst community used for editing</li>
 <li>QMK Toolbox - program used to flash .hex to keyboard</li>
 <li>GUI - graphical user interface</li>
-<li>kc/KC - stands for keycode and is what your keyboard sends to your computer as the key being pressed</li>
+<li>kc/KC - stands for keycode, and is the code your keyboard sends to your computer as the key being pressed</li>
 </ul>
 <h4><strong>Supported programming methods</strong></h4>
-<p>This can be accomplished in a couple different ways.  The two most frequently used are:  compiling your keyboard settings and keymaps via QMK firmware and a build environment, or utilizing KLE and QFB to create your keymap and use QMK Toolbox to flash your keymap.  Each has their pros and cons.</p>
-<p>QMK firmware and QMK Keyboard Firmware Builder are two separate entities.  QMK firmware is the entire library of code used to build keyboard firmware and input features.  QFB is a web based GUI that does the compiling of the firmware for you; there are two different websites you can utilize: kbfirmware and qmkeyboard.  These are explained further below.</p>
-<p>Utilizing QMK Firmware and build environment can be quite an undertaking for someone without programming knowledge, it involves numerous steps, and can be lengthy process to setup your keymap.  However, compiling your keymaps this way affords the greatest range of customizability and allows you to add in QMK features that wouldn’t normally be afforded to you with easier options.</p>
-<p>Using KLE and QMK Firmware Builder is the easier of the two options: it’s a great way to get your keyboard up and running quickly, much easier to program, and allows you to utilize a GUI to manipulate your keymaps.  There a few downsides: you have to utilize two different websites, a program to flash your keyboard, less access to QMK features, and less customizability.</p>
-<p>However, combining both ways can offer a reduction in programming time with maximum customizability.  Using KLE to create the keyboard layout &gt; import into QFB to set pins and other settings &gt; compile and download .zip &gt; open text editor to edit keymap and add QMK features &gt; finally use build environment to create the flashing file (.hex) &gt; use QMK Toolbox or dev environment to flash .hex to your keyboard.  This gives you the best of worlds with a GUI and the ability to edit the code exactly to the specifications you want.</p>
+<p>This can be accomplished in a couple different ways.  The two most frequently used are:  compiling your keyboard settings and keymaps via QMK firmware and a build environment, or utilizing KLE and a GFB to create your keymap and use QMK Toolbox to flash your keymap.  Each has their pros and cons.</p>
+<p>QMK Firmware and the GUI firmware builders are two separate entities.  QMK firmware is the entire library of code used to build keyboard firmware and input features.  GFB is a web based GUI that does the compiling of the firmware for you; there are two different websites you can utilize: kbfirmware and qmkeyboard.  These are explained further below.</p>
+<p>Utilizing QMK Firmware and a build environment can be quite an undertaking for someone without programming knowledge, it involves a few extra steps, and can be lengthy process to setup your keymap.  However, compiling your keymaps this way affords the greatest range of customizability and allows you to add in QMK features that wouldn’t normally be afforded to you with other options. Once you’ve completed a build with QMK Firmware and build environment a couple times, it becomes incredibly easy. </p>
+<p>Using KLE and a web-based firmware builder is the easier of the two options: it’s a great way to get your keyboard up and running quickly, much easier to program, and allows you to utilize a GUI to manipulate your keymaps.  There are quite a few downsides: you have to utilize two different websites, a program to flash your keyboard, less access to QMK features, less customizability, and is not supported by the <a href=“https://github.com/qmk/qmk_firmware” title=“Official QMK Firmware”>Official QMK Firmware</a>. </p>
+<p>However, combining both ways can offer a reduction in programming time with maximum customizability.  Using KLE to create the keyboard layout &gt; import into a GFB to set pins and other settings &gt; compile and download .zip &gt; open text editor to edit keymap and add Official QMK features &gt; finally use a build environment to create the flashing file (.hex) &gt; use QMK Toolbox or dev environment to flash the .hex to your keyboard.  This gives you a GUI to adjust your keyboard layout and the ability to edit the code exactly to the specifications you want.</p>
 <hr class="hr--small" />
 <div class="toggleBox showdesktop">
 <h1 id="keyboard-layout-editor" class="clickable-header"><strong>Keyboard Layout Editor</strong></h1>
-<p><a href="http://www.keyboard-layout-editor.com" target="_blank" title="KLE" rel="noopener noreferrer">KLE</a> is where you create the layout for your keyboard.  This is important as this correlates with QFB about your key placement on your PCB and what keycode you want the key to register when pressed.</p>
+<p><a href="http://www.keyboard-layout-editor.com" target="_blank" title="KLE" rel="noopener noreferrer">KLE</a> is where you create the layout for your keyboard.  This is important as this correlates with GFB about your key placement on your PCB and what keycode you want the key to register when pressed.</p>
 <p style="text-align: center;"><img alt="" src="https://i.imgur.com/wFANuGC.jpg" style="float: none;" /></p>
 <p style="text-align: center;"> </p>
 <p>The main features we’ll showcase here are:</p>
@@ -46,7 +53,7 @@
 <p>This can be a great way to start building for your keyboard layout, as this will save you from having to add each key individually. </p>
 <p style="text-align: center;"><img alt="" src="https://i.imgur.com/E67URc3.jpg" style="float: none;" /></p>
 <p style="text-align: center;"> </p>
-<p>Select from the drop down the closest keyboard to your keyboard.  ALU84 is closest to Keycool 84, ACR60 is closest to Default 60%, MM2 is closest to JD40 or Planck depending on setup, etc.</p>
+<p>Select from the drop down, the closest keyboard to your keyboard.  ALU84 is closest to Keycool 84, ACR60 is closest to Default 60%, Mechmini 2 is closest to JD40 or Planck depending on setup, etc.</p>
 <p>From here you can easily add, delete, or modify the key to how you want.</p>
 <hr />
 <h4><strong>Add Key</strong></h4>
@@ -63,14 +70,14 @@
 <h4><strong>Properties</strong></h4>
 <p>Under the Properties tab you can change all kinds of settings about individual keys.</p>
 <p style="text-align: center;"><img alt="" src="https://i.imgur.com/sC1tuIN.jpg" style="float: none;" /></p>
-<p>It is not advised to group-select keys and edit their data, unless you’re moving their placement on the Y-axis, changing legend colors, changing legend size, etc., as this can cause unwanted results.  However, there is always the Undo button at the top</p>
-<p>The Top Legend, Center Legend, Bottom Legend, and Front Legend all deal with the placement of the text on the keycaps.  This is not just cosmetic; this will indicate to qmkeyboard.cn what key you are wanting to be registered when pressed (some keys don’t transfer correctly, this is explained further below).  However, adding more than one legend is cosmetic only and will not be applied into qmkeyboard.cn (or others) when programming your keyboard.  When adding more than one legend you may notice that once the Raw Data is transferred into qmkeyboard.cn only one key is registered, this due to the way QMK and qmkeyboard.cn work.</p>
-<p>Width and height deal with the size of the keycap and correlate directly to qmkeyboard.cn when programming.  It is important to ensure these sizes are correct, and match your key placement on the PCB (1u key is 1, 1.25u key is 1.25, etc.)</p>
+<p>It is not advised to group-select keys and edit their data as this can cause unwanted results.  Unless you’re moving their placement on the y-axis (for a row of keys)/x-axis (for a column of keys), changing legend colors, changing legend colors, etc.  However, there is always the Undo button at the top if a mistake is made.</p>
+<p>The Top Legend, Center Legend, Bottom Legend, and Front Legend all handle the placement of the text on the keycaps.  This is not just cosmetic; this will indicate to GFB what key you are wanting to be registered when pressed (some keys don’t transfer correctly, this is explained further below).  However, adding more than one legend on a keycap is cosmetic only and will not be applied into GFB when programming your keyboard.  When adding more than one legend you may notice that once the Raw Data is transferred into GFB only one key is registered, this due to the way GFB</p>
+<p>Width and height deal with the size of the keycap and correlate directly into GFB when programming.  It is important to ensure these sizes are correct, and match your key placement on the PCB (1u key is 1, 1.25u key is 1.25, etc.)</p>
 <hr />
 <h4><strong>Raw Data</strong></h4>
 <p>The Raw Data is used to edit the code specific data about each key and their placement.  As well as this is the data you need to import into qmkeyboard.cn to have the proper layout.</p>
 <p style="text-align: center;"><img src="https://i.imgur.com/CViHq74.jpg" alt="" /></p>
-<p>Once you’ve completed mapping your keyboard this data needs to be imported into qmkeybaord.cn.  Don’t worry about different layers yet, we will do that in qmkeyboard.cn. </p>
+<p>Once you’ve completed mapping your keyboard this data needs to be imported into the GFB.  Don’t worry about different layers yet, we will do that in the GFB. </p>
 <p>You can also use the Raw Data to import other layouts or saved layouts.  Simply copy all the data in the other layout (from text file, etc.) &gt; either remove all the data from Raw Data (highlight &gt; delete) or highlight all of data &gt; paste data from text.  See you can see below how it changed the entire previous layout.</p>
 <p style="text-align: center;"><img alt="" src="https://i.imgur.com/odiJ9Ah.jpg" style="float: none;" /></p>
 <p>You can also use this option to correct multiple layouts on one page quickly, for instance a visual representation of all layers.  Highlight the Raw Data &gt; copy &gt; left click after the last “]” (on the last row) &gt; insert a “,” (comma) &gt; press enter to start a blank row &gt; then paste.  If you receive an error code at the bottom it’s likely you didn’t enter the comma after the last bracket “],”.  Now you have another layout where you can visualize your other layer(s) easily, simply repeat for more layers.  To input space between the two layers, start at the very bottom row &gt; utilize row selection &gt; increase the Y-axis (under Properties) by 1 ( i.e. 5 change to 6) &gt; continue for the rest of rows. </p>
@@ -91,22 +98,31 @@
 <p>KLE is what you use to create your keyboard layout, initially set the keycode you want each key to be, and where we extra the Raw Data to import into qmkeyboard.cn for programming.</p>
 <hr class="hr--small" />
 <div class="toggleBox showdesktop">
-<h1 id="qmk-firmware-builder-guide" class="clickable-header"><strong>QMK Firmware Builder Guide</strong></h1>
-<h4><strong>QFB Overview</strong></h4>
-<p>QFB has two web based GUIs <a href="http://qmkeyboard.cn" title="qmkeyboard">qmkeyboard</a> and <a href="http://kbfirmware.com" title="kbfirmware">kbfirmware</a>.  Utilize one of these GUIs to compile your keymap, set wiring diagram, set pins from the micro-controller, and set macros.  QFB does not have all the features that QMK offers, and is highly recommended if you don’t need these extra features or don’t want to compile your firmware via command line and build environment. </p>
-<p>Here at mechkeys.ca we mostly use <a href="http://qmkeyboard.cn">qmkeyboard</a>, as our boards correlate directly with some presets there.</p>
+<h1 id="qmk-firmware-builder-guide" class="clickable-header"><strong>GUI Firmware Builder Guide</strong></h1>
+<h4><strong>GFB Overview</strong></h4>
+<p>GFB has two web based GUIs <a href="http://qmkeyboard.cn" title="qmkeyboard">qmkeyboard</a> and <a href="http://kbfirmware.com" title="kbfirmware">kbfirmware</a>.  
+<ul>
+% <li>Disclaimer: neither of these GUIs are officially supported by <a href=“https://docs.qmk.fm” title=“QMK Firmware”>QMK Firmware</a>, and are based on old builds of <a href=“https://docs.qmk.fm” title=“QMK Firmware”>QMK Firmware</a>. Meaning you will not have access to all of <a href=“https://docs.qmk.fm” title=“QMK Firmware”>QMK Firmware’s</a> features</li>
+</ul>
+<p>You can utilize one of these GUIs to create your keymap, set wiring diagram, set pins from the micro-controller, set macros, and compile .hex file for your keyboard.  GFB does not have all the features that <a href=“https://docs.qmk.fm” title=“QMK Firmware”>QMK Firmware</a> offers, and is only recommended if you don’t need these extra features or don’t want to compile your firmware via command line and build environment. </p>
+<p>Here at mechkeys.ca we mostly recommend <a href="http://qmkeyboard.cn">qmkeyboard</a>, if you aren’t compiling via a build environment, as our boards correlate directly with some presets there.</p>
 <p style="text-align: center;"><img src="https://i.imgur.com/KeYfWcc.jpg" alt="" /></p>
 <p> </p>
 <p>On the main page there are three selection options: .json upload, KLE import, or choose a preset. </p>
-<p>Utilize the .json upload if you have a saved .json from QFB, or if you downloaded a .json from mechkeys.ca or someone else.  The .json upload will not correlate correctly from KLE, if you download the .json from there, and vice versa a downloaded .json from QFB will not import into KLE correctly. </p>
-<p>Importing a keymap from KLE uses the data from Raw Data within KLE.  This will NOT correctly set your wiring diagram, pin selection, layers, or settings correctly.  You need to manually set these and ensure they are correct to avoid problems when flashing your firmware.  Simply copy the Raw Data from KLE and paste it in the box, then click import.</p>
+<p>Utilize the .json upload if you have a saved .json from GFB, if you downloaded a .json from mechkeys.ca, or someone else.  The .json upload will not correlate correctly from KLE, if you downloaded the .json from there, and vice versa a downloaded .json from GFB will not import into KLE correctly. </p>
+<p>Importing a keymap from KLE uses the data from the Raw Data tab within KLE.<\p>
+<div class=“note-caution note”><br />
+<h4>Caution</h4>
+<p>This will NOT correctly set your wiring diagram, pin selection, layers, or settings correctly.  You need to manually set these and ensure they are correct to avoid problems when flashing your firmware. See each specific keyboard programming guide from the menu at the top under QMK.</p>
+</div>
+<p>Simply copy the Raw Data from KLE and paste it in the box, then click import.</p>
 <p style="text-align: center;"><img src="https://i.imgur.com/qoKHurb.jpg" alt="" /></p>
 <p>Choosing a preset serves two purposes for you: it sets a standard PCB layout that is utilized by mechkeys.ca keyboards, and allows you to see what pins to set for the micro-controller and what settings should be applied before compiling the firmware.</p>
 <div class="note-caution note"><br />
 <h4>Caution</h4>
-<p>If you didn’t download your .hex from mechkeys.ca always check a .hex file with an accompanying .json in QFB to ensure the correct pins and settings are set before you flash.</p>
+<p>If you didn’t download your .hex from mechkeys.ca always check a .hex file with an accompanying .json in GFB to ensure the correct pins and settings are set before you flash.</p>
 </div>
-<p>For reference ONLY, the following keyboards use the same pin layout and settings as the indicated preset layout within QFB.  See specific programming instructions for your keyboard here on mechkeys.ca!</p>
+<p>For reference ONLY, the following keyboards use the same pin layout and settings as the indicated preset layout within GFB.  See specific programming instructions for your specific keyboard programming guide from the menu at the top under QMK.</p>
 <ul>
 <li>ALU84 – KBD75 (ver 1)</li>
 <li>ACR60 – DZ60</li>
@@ -118,22 +134,22 @@
 <p style="text-align: center;"><img alt="" src="https://i.imgur.com/uxhMhLs.jpg" style="float: none;" /></p>
 <p>Here you set the number of rows and columns on your PCB. Selecting a specific key will allow you change the specifics of how it is wired.</p>
 <hr />
-<h4><strong>QFB pins</strong></h4>
+<h4><strong>GFB pins</strong></h4>
 <p>These settings are crucial to the correct function of your PCB’s micro-controller, which controls everything about your keyboard. </p>
 <div class="note-caution note"><br />
 <h4>Caution</h4>
-<p>Failure to follow mechkeys.ca pins settings could result in the following problems with your board: unable to use reset button for flashing, keys inoperative, LEDs inoperative, PCB bricking, etc.  Ensure these settings are correct if creating your own layout.</p>
+<p>Failure to follow mechkeys.ca pin settings could result in the following problems with your keyboard: the inability to use the reset button for flashing, keys inoperative, LEDs inoperative, PCB bricking, etc.  Ensure these settings are correct if creating your own layout.</p>
 </div>
 <p>Rows and columns are directly connected to the micro-controller’s pins within the PCB.  If these settings are incorrect a key, row, or column could not function properly.</p>
 <p style="text-align: center;"><img src="https://i.imgur.com/vC5WOuk.jpg" alt="" /></p>
-<p>Configure LED pins section configure the LEDs of your keyboard.  If your keyboard supports Num, Caps, or Scroll Lock LED indicator you set this here.  Backlight is the setting for LEDs beneath the keycaps on top of the key switch.  WS2812 Strip is the RGB LEDs on the bottom of your keyboard that create the ambient RGB lighting.</p>
+<p>Set your LED pins of your keyboard using the menus below he row and column pins.  If your keyboard supports Num, Caps, or Scroll Lock LED indicator(s) you set this here.  Backlight is the setting for LEDs beneath the keycaps on top of the key switch.  WS2812 Strip is the RGB LEDs on the bottom of your keyboard that create the ambient RGB lighting.</p>
 <p style="text-align: center;"><img src="https://i.imgur.com/pcqsVxI.jpg" alt="" /></p>
 <hr />
-<h4><strong>QFB Keymap</strong></h4>
+<h4><strong>GFB Keymap</strong></h4>
 <p>This tab is where you set the keycode to match the key switch you want to want to be registered (output). </p>
-<p>It is crucial to reference the <a href="https://docs.qmk.fm/keycodes.html" title="QMK key codes">QMK documentation</a> about keycodes.</p>
-<h2 style="text-align: left;"><strong>QFB key selection</strong></h2>
-<p>Select the key you want to change (in this case Q) then select the box that says KC_Q to change keycode that will be sent to your computer when pressed.  KC stands for keycode, after the underscore is the actual keycode sent to your computer.  There are numerous keycode possibilities.</p>
+<p>It is crucial to reference the <a href="https://docs.qmk.fm/keycodes.html" title="QMK key codes"> Official QMK keycode documentation</a> when setting keycode.</p>
+<h2 style="text-align: left;"><strong>GFB key selection</strong></h2>
+<p>Select the key you want to change (in this case Q) then select the box that says <code>KC_Q</code> (keycode_Q) to change the keycode that will be sent to your computer when pressed.  KC stands for keycode; after the underscore is the actual keycode sent to your computer.  There are numerous keycode possibilities, reference the <a href=“https://docs.qmk.fm/keycodes.html” title=“QMK key codes”> Official QMK keycode documentation</a> for the complete list of keycodes.</p>
 <p style="text-align: center;"><img src="https://i.imgur.com/DKBpiAW.jpg" alt="" />The different tabs within the configure tools are:</p>
 <ul>
 <li>Primary – standard alpha keys, number keys, backspace, etc.</li>
@@ -144,13 +160,13 @@
 <li>Other – set specific keycode value, use only if you know the specific keycode you want to set</li>
 </ul>
 <p style="text-align: center;"><img src="https://i.imgur.com/fwcENdN.jpg" alt="" /></p>
-<p>When developing your keymap, it is highly recommended to add a RESET keycode on a different layer to your keyboard.  This will keep you from having to open the case and press the reset button on the PCB to flash. </p>
+<p>When creating your keymap, it is highly recommended to add a RESET keycode on a different layer to your keyboard.  This will keep you from having to open the case and press the reset button on the PCB to flash. </p>
 <hr />
-<h4><strong>QFB keymap FN tab</strong></h4>
+<h4><strong>GFB keymap FN tab</strong></h4>
 <p>The FN tab handles functions, which can be anything from momentary switching to a layer, to having a single key do multiple things.</p>
-<p>When working with these keycodes it is imperative you reference the <a href="https://docs.qmk.fm/keycodes.html" title="QMK docs keycodes">QMK keycode documentation</a>.</p>
+<p>When working with these keycodes it is imperative you reference the <a href="https://docs.qmk.fm/keycodes.html" title="QMK docs keycodes">Official QMK keycode documentation</a>.</p>
 <h4><strong>FN - Modifier keys</strong></h4>
-<p><code>LCTL()</code> through <code>ALTG()</code> – allow to you combine a mod (i.e. LCTRL) with a keycode.  When pressed the keydown for the mod will be sent first, and then the KC will be sent.  When released the keyup for KC will be sent and then the mod will be sent.</p>
+<p><code>LCTL()</code> through <code>ALTG()</code> – allows to you combine a mod (i.e. <code>LCTRL</code>) with a keycode.  When pressed down the keydown for the modifier will be sent first, and then the KC will be sent.  When released the keyup for the KC will be sent first and then the modifier will be sent.</p>
 <p style="text-align: center;"><img src="https://i.imgur.com/3LOGO6o.jpg" alt="" /></p>
 <ul>
 <li><code>LSFT(kc)</code> - applies left Shift to<span> </span><em>kc</em><span> </span></li>
@@ -172,50 +188,51 @@
 <p><code>LT()</code> through <code>MT()</code> – these functions allow you to activate layers in various ways.  Care must be taken when switching layers; it’s possible to lock yourself into a layer with no way to deactivate that layer (without unplugging your keyboard).</p>
 <ul>
 <li><code>LT(layer, kc)</code><span></span>- momentary switch to<span> </span>layer<span> </span>when held, and<span> </span><em>kc</em><span> </span>when tapped.</li>
-<li><code>TO(layer)</code><span></span>- Goes to a layer This code is special, because it lets you go either up or down the stack -- just goes directly to the layer<span> </span>you want. So while other codes only let you go<span> </span><em>up</em><span> </span>the stack (from<span> </span>layer 0 to layer<span> </span>3, for example),<span> </span>TO(2)<span> </span>is going to get you to<span> </span>layer<span> </span>2, no matter where you activate it from -- even if you're currently on layer<span> </span> This gets activated on keydown (as soon as the key is pressed).</li>
-<li><code>MO(layer)</code><span></span>- momentary switch to<span> </span><em></em> As soon as you let go of the key, the<span> </span>layer is deactivated and you pop back out to the previous<span> </span>layer.</li>
+<li><code>TO(layer)</code><span></span>- Goes to a layer. This code is special, because it lets you go directly to the layer<span> </span>you want. So while other codes only let you go<span> </span><em>up</em><span> </span>the stack (from<span> </span>layer 0 to layer<span> </span>3, for example), <code>TO(2)</code> is going to take you directly to layer 2, no matter where you activate it from -- even if you're currently on layer 8. This gets activated on keydown (as soon as the key is pressed).</li>
+<li><code>MO(layer)</code>- momentary switch to a layer when pressed. As soon as release the key, the layer is deactivated and you pop back out to the previous layer.</li>
 <li><code>DF(layer)</code> – sets the base layer (not recommended for use).</li>
-<li><code>TG(layer)</code><span></span>- toggles a<span> </span>layer on or off.</li>
-<li><code>OSL(layer)</code> – switch to layer for one single keypress. Will switch back to previous layer afterward.
+<li><code>TG(layer)</code> - toggles a layer on or off.</li>
+<li><code>OSL(layer)</code> – switch to layer for one single keypress. Will switch back to previous layer after any other single keypress.
 <ul>
-<li><code>OSL(layer)</code> – is a one shot key and you should read the QMK <a href="https://docs.qmk.fm/feature_advanced_keycodes.html#shifted-keycodes" title="QMK OSL layer">documentation</a> before implementing</li>
+<li><code>OSL(layer)</code> – is a one shot key and you should read the <a href="https://docs.qmk.fm/feature_advanced_keycodes.html#shifted-keycodes" title="QMK OSL layer">QMK one shot key documentation</a> before implementing</li>
 </ul>
 </li>
-<li><code>OSM(layer)</code> -  Momentarily hold down <span></span><em>mod</em>. You must use the<span> </span>MOD_*<span> </span>keycodes as shown in<span> </span><a href="https://docs.qmk.fm/feature_advanced_keycodes.html#shifted-keycodes">Mod Tap</a>, not the<span> </span>KC_*<span> </span>
+<li><code>OSM(layer)</code> -  Momentarily hold down <em>mod</em>. You must use the<em>MOD_*</em> keycodes as shown in<a href="https://docs.qmk.fm/feature_advanced_keycodes.html#shifted-keycodes">Mod Tap</a>, not the<em>KC_*</em>
 <ul>
 <li><code>OSM(layer)</code> – is a one shot key and you should read the QMK <a href="https://docs.qmk.fm/feature_advanced_keycodes.html#shifted-keycodes" title="QMK OSM layer">documentation</a> before</li>
 </ul>
 </li>
-<li><code>MT(mod, kc)</code><span>- </span> is <em>mod</em> (modifier key - MOD_LCTL, MOD_LSFT) when held, and <em>kc</em> when tapped.
+<li><code>MT(mod, kc)</code> - is <em>mod</em> (modifier key - <code>MOD_LCTL, MOD_LSFT</code>) when held, and <em>kc</em> when tapped.
 <ul>
-<li><code>MT(mod, kc)</code><span>- </span> is a mod tap keycode and you should read the mod tap section below, or the QMK documentation(link), before implementing.</li>
+<li><code>MT(mod, kc)</code> -  is a mod tap keycode and you should read the mod tap section below, or the <a brief=“https://docs.qmk.fm/feature_advanced_keycodes.html#shifted-keycodes”> QMK Mod Tap documentation</a> before implementing.</li>
 </ul>
 </li>
-<li><code>TT(layer)</code><span></span>-<span> </span>Layer<span> </span>Tap-Toggle. If you hold the<span> </span>keydown, the<span> </span>layer<span> </span>becomes active, and then deactivates when you let go. And if you<span> </span>tap it, the<span> </span>layer simply becomes active (toggles on). It needs 5 taps by default, but you can set it by defining<span> </span>TAPPING_TOGGLE, for example,<span> </span>#define TAPPING_TOGGLE 2<span> </span>for just two taps.
+<li><code>TT(layer)</code> - Layer Tap-Toggle. If you hold the keydown, the layer becomes active, and then deactivates when you let go. If you tap it, the layer simply becomes active (toggles on). It needs 5 taps by default, but you can set it by defining <code>TAPPING_TOGGLE</code>, for example,<code>#define TAPPING_TOGGLE 2</code> for just two taps.
 <ul>
-<li><span> </span><code>TT(layer)</code><span></span>–<span> is not currently available within QFB, nor can you set it within QFB.  This is an example of the limitations within QFB, and the features within QMK when building from build environment.</span></li>
+<li><code>TT(layer)</code> –  is not currently available within GFB, nor can you set it within GFB.  This is an example of the limitations within GFB, and the features within QMK when building from build environment.</li>
 </ul>
 </li>
 </ul>
-<h4><span><strong>FN – Mod tap </strong></span></h4>
-<p><span><code>CTL_T()</code> through <code>ALL_T()</code> – these are mod tap keys.  These send a modifier (i.e LCTL) when held, and <em>kc </em>when tapped. </span>In other words, you can have a key that sends Esc (or the letter O or whatever) when you tap it, but works as a Control key or a Shift key when you hold it down.</p>
-<p>These can also be combined like<span> </span><code>MOD_LCTL | MOD_LSFT</code><span> </span>e.g.<span> </span><code>MT(MOD_LCTL | MOD_LSFT, KC_ESC</code>)which would activate Control and Shift when held, and send Escape when tapped. Note however, that you cannot mix right and left side modifiers.</p>
+<h4><strong>FN – Mod tap </strong></h4>
+<p><code>CTL_T()</code> through <code>ALL_T()</code> – these are mod tap keys.  These send a modifier (i.e <code>LCTL</code>) when held, and <em>kc</em> when tapped.  In other words, you can have a key that sends Esc (or the letter Q, or whatever) when you tap it, but works as a Control key or a Shift key when you hold it down.</p>
+<p>These can also be combined like <code>MOD_LCTL | MOD_LSFT</code> e.g.<code>MT(MOD_LCTL | MOD_LSFT, KC_ESC</code>)which would activate Control and Shift when held, and send Escape when tapped. Note however, that you cannot mix right and left side modifiers.</p>
 <ul>
-<li><code>CTL_T(kc)</code>C<span></span>- is LCTL when held and<span> </span><em>kc</em><span> </span>when tapped</li>
-<li><code>SFT_T(kc)</code><span></span>- is LSFT when held and<span> </span><em>kc</em><span> </span>when tapped</li>
-<li><code>ALT_T(kc)</code><span></span>- is LALT when held and<span> </span><em>kc</em><span> </span>when tapped</li>
-<li><code>ALGR_T(kc)</code><span></span>- is AltGr when held and<span> </span><em>kc</em><span> </span>when tapped</li>
-<li><code>GUI_T(kc)</code><span></span>- is LGUI when held and<span> </span><em>kc</em><span> </span>when tapped</li>
-<li><code>ALL_T(kc)</code><span></span>- is Hyper (all mods) when held and<span> </span><em>kc</em><span> </span>when tapped. To read more about what you can do with a Hyper key, see<span> </span><a href="http://brettterpstra.com/2012/12/08/a-useful-caps-lock-key/">this blog post by Brett Terpstra</a></li>
-<li><code>LCAG_T(kc)</code><span></span>- is CtrlAltGui when held and<span> </span><em>kc</em><span> </span>when tapped</li>
-<li><code>MEH_T(kc)</code><span></span>- is like Hyper, but not as cool -- does not include the Cmd/Win key, so just sends Alt+Ctrl+Shift.</li>
+<li><code>CTL_T(kc)</code>C - is <code>LCTL</code> when held and <em>kc</em> when tapped</li>
+<li><code>SFT_T(kc)</code> - is <code>LSFT</code> when held and <em>kc</em> when tapped</li>
+<li><code>ALT_T(kc)</code> - is <code>LALT</code> when held and <em>kc</em> when tapped</li>
+<li><code>ALGR_T(kc)</code> - is <code>ALTGR</code> (<code>RCTL + RALT + kc</code> when held and <em>kc</em> when tapped</li>
+<li><code>GUI_T(kc)</code> - is <code>LGUI</code> when held and <em>kc</em> when tapped</li>
+<li><code>ALL_T(kc)</code> - is <code>HYPER</code> (all mods - <code>LCTL + LSFT + LALT + LGUI + kc</code>) when held and <em>kc</em> when tapped. To read more about what you can do with a <code>HYPER</code> key, see <a href="http://brettterpstra.com/2012/12/08/a-useful-caps-lock-key/">this blog post by Brett Terpstra</a></li>
+<li><code>LCAG_T(kc)</code> - is <code>LCAG</code> (<code>LCTL + LALT + LGUI + kc</code> when held and <em>kc</em> when tapped</li>
+<li><code>MEH_T(kc)</code> - is like <code>HYPER</code>, but not as cool -- does not include the <code>CMD/WIN</code> key, so just sends <code>ALT + CTRL + SHIFT</code>.</li>
 </ul>
-<h4><strong>FN – Macro and tricky esc</strong></h4>
-<p><code>M()</code> through <code>Tricky_ESC</code> – these two are complete different from one another.  M() sets the macro keycode then has you select which macro you want to set, setting macros is explained below.  <code>Tricky_ESC</code> is essentially another mod tap key with a twist.  This key will output <code>ESC</code> normally, but when pressed with Shift or GUI (GUI does not work on Mac) will send a <code>~</code>, or if you press Alt (Opt on Mac) + Shift + <code>TRICKY_ESC</code> will send <code>`</code>.  Any other modifiers used in conjunction with <code>TRICKY_ESC</code> will yield a normal ESC key press.</p>
+<h4><strong>FN – Macro and <code>Tricky_ESC</code></strong></h4>
+<p><code>M()</code> through <code>Tricky_ESC</code> – these two are complete different from one another.  <code>M()</code> sets the macro keycode then has you select which macro you want to set, setting macros is explained below.  <code>Tricky_ESC</code> is essentially another mod tap key with a twist.  This key will output <code>ESC</code> normally, but when pressed with <code>SHIFT</code> or <code>GUI</code> (<code>GUI</code> does not work on Mac) will send a <code>~</code>.  If you press <code>ALT</code> (<code>OPT</code> on Mac) <code>+ Shift + TRICKY_ESC</code> then <code>TRICKY_ESC</code> will send <code>`</code>. Any other modifiers used in conjunction with <code>TRICKY_ESC</code> will yield a normal ESC key press.</p>
 <div class="note-caution note"><br />
 <h4>Caution</h4>
 <p>Realeasing Alt (Opt on Mac) + Shift before releasing <code>Tricky_ESC</code> will result in a continuous ` that won’t be stopped until another input is made.  The same can happen with Shift + Tricky_ESC resulting in a continuous ~ that won’t be stopped until another input is made.</p>
 </div>
+###<p><code>TRICKY_ESC</code> is very similar to <code>KC_GESC</code> 
 <h4><strong>FN – Setting keycode </strong></h4>
 <p>When utilizing a FN keycode within QFB (i.e. MO(layer)), QFB will open a new box.  This box represents the different setting you want to set for the selected keycode.  In this example <code>MO()</code> is selected, QFB now wants you to define what layer you want it to change to using the layer control button(s) below MO.  The same applies for FN keycodes a new box will appear and want you to input more information. This example is how to set <code>MO()</code> to switch to layer 1 (the next layer up).</p>
 <p style="text-align: center;"><img src="https://i.imgur.com/vuYc7Dg.jpg" alt="" /></p>
